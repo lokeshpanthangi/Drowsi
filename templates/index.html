@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Monitoring System</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F7F9FC;
+            color: #34495E;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to right, #3498db, #1abc9c);
+            padding: 15px;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 1.8rem;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-btn-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .navlink, .btn {
+            color: white;
+            font-size: 1.1rem;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .navlink:hover, .btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+        .container {
+            width: 90%;
+            margin: 50px auto;
+            max-width: 1100px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2980b9;
+            margin-bottom: 30px;
+            font-weight: 600;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Video Container */
+        .video-container {
+            width: 100%;
+            height: 400px;
+            background-color: #D5DBDB;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Placeholder for Video Feed */
+        .video-placeholder {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+        }
+
+        /* Status Alert */
+        #alert {
+            font-size: 1.5rem;
+            color: #F39C12;
+            text-align: center;
+            font-weight: bold;
+            background-color: rgba(243, 156, 18, 0.2);
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* Action Buttons */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .button {
+            background: linear-gradient(to right, #3498db, #1abc9c);
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background: linear-gradient(to right, #1abc9c, #3498db);
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            background: linear-gradient(to right, #2980b9, #1abc9c);
+            color: white;
+            padding: 30px 10px;
+            font-size: 1rem;
+        }
+
+        .footer-icons {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        .footer-icons i {
+            margin: 0 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-icons i:hover {
+            transform: scale(1.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .video-container {
+                height: 300px;
+            }
+
+            .button {
+                font-size: 1rem;
+                padding: 12px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#" class="logo">Drowsiness Detection</a>
+        <div class="profile-btn-container">
+            <a href="/" class="btn">Home</a>
+            <a href="/profile" class="navlink">Profile</a>
+            <a href="/logout" class="navlink">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="alert">Warning! Drowsiness or cell phone detected!</div>
+        <h1>Real-Time Monitoring System</h1>
+        <div class="video-container">
+            <!-- Placeholder for the video feed -->
+            <div class="video-placeholder">Video Feed Placeholder</div>
+        </div>
+
+        <div class="button-container">
+            <button class="button" id="startBtn">Start Monitoring</button>
+            <button class="button">Stop Monitoring</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-icons">
+            <i class="fab fa-facebook"></i>
+            <i class="fab fa-twitter"></i>
+            <i class="fab fa-instagram"></i>
+        </div>
+        <p>&copy; 2025 Drowsiness Detection System | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const alertBox = document.getElementById('alert');
+
+        const socket = io.connect('http://' + document.domain + ':' + location.port + '/alert');
+        socket.on('alert', (data) => {
+            alertBox.innerHTML = "Warning! Drowsiness or cell phone detected!";
+            alertBox.style.display = "block";
+            console.log(data.message);
+        });
+
+        startBtn.addEventListener("click", function() {
+            alertBox.style.display = "none";
+        });
+    </script>
+</body>
+</html>
